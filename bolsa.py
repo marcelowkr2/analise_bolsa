@@ -1,9 +1,11 @@
+
 import tkinter as tk
 from tkinter import ttk
 import yfinance as yf
 import ta
 import time
 import alpaca_trade_api as tradeapi
+
 
 # Configurações da API Alpaca (note que ela não é compatível com ações brasileiras)
 APCA_API_BASE_URL = "https://paper-api.alpaca.markets"
@@ -52,6 +54,7 @@ class TradingApp:
         self.macd_check = tk.BooleanVar(value=True)
         ttk.Checkbutton(config_frame, text="Usar RSI", variable=self.rsi_check).grid(row=4, column=0, padx=5, pady=5)
         ttk.Checkbutton(config_frame, text="Usar MACD", variable=self.macd_check).grid(row=4, column=1, padx=5, pady=5, sticky="w")
+
 
         # Painel de Indicadores
         self.indicator_frame = ttk.LabelFrame(root, text="Indicadores Técnicos")
@@ -131,12 +134,17 @@ def reconnect_api():
         print(f"Falha ao reconectar à API: {e}")
 
 def obter_dados(ticker):
+    # Adiciona o sufixo '.SA' aos tickers da B3 (Bolsa Brasileira)
+    if not ticker.endswith('.SA'):
+        ticker += '.SA'
+    
     try:
         dados = yf.download(ticker, period="1d", interval="1m")
         return dados
     except Exception as e:
         print(f"Erro ao obter dados de {ticker}: {e}")
         return None
+
 
 def executar_ordem(ticker, quantidade, tipo_ordem, price):
     try:
@@ -215,3 +223,4 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = TradingApp(root)
     root.mainloop()
+    
