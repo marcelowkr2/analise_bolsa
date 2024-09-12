@@ -5,8 +5,8 @@ import ta
 import time
 import alpaca_trade_api as tradeapi
 
-# Configurações da API Alpaca
-APCA_API_BASE_URL = "https://paper-api.alpaca.markets"  # Use este para paper trading
+# Configurações da API Alpaca (note que ela não é compatível com ações brasileiras)
+APCA_API_BASE_URL = "https://paper-api.alpaca.markets"
 APCA_API_KEY_ID = "PK1BYFC3Q6IH2LQ4OL9Y"
 APCA_API_SECRET_KEY = "r4sx1IIt0NJn2YJypCcICOPu8fwfemCxRdWrirVW"
 
@@ -53,15 +53,39 @@ class TradingApp:
         ttk.Checkbutton(config_frame, text="Usar RSI", variable=self.rsi_check).grid(row=4, column=0, padx=5, pady=5)
         ttk.Checkbutton(config_frame, text="Usar MACD", variable=self.macd_check).grid(row=4, column=1, padx=5, pady=5, sticky="w")
 
+        # Painel de Indicadores
+        self.indicator_frame = ttk.LabelFrame(root, text="Indicadores Técnicos")
+        self.indicator_frame.grid(row=5, column=0, columnspan=2, padx=5, pady=5, sticky="ew")
+
+        self.sma_label = ttk.Label(self.indicator_frame, text="SMA 20:")
+        self.sma_label.grid(row=0, column=0, padx=5, pady=5)
+        self.sma_value = ttk.Label(self.indicator_frame, text="--")
+        self.sma_value.grid(row=0, column=1, padx=5, pady=5)
+
+        self.rsi_label = ttk.Label(self.indicator_frame, text="RSI:")
+        self.rsi_label.grid(row=1, column=0, padx=5, pady=5)
+        self.rsi_value = ttk.Label(self.indicator_frame, text="--")
+        self.rsi_value.grid(row=1, column=1, padx=5, pady=5)
+
+        self.macd_label = ttk.Label(self.indicator_frame, text="MACD:")
+        self.macd_label.grid(row=2, column=0, padx=5, pady=5)
+        self.macd_value = ttk.Label(self.indicator_frame, text="--")
+        self.macd_value.grid(row=2, column=1, padx=5, pady=5)
+
+        self.signal_label = ttk.Label(self.indicator_frame, text="Signal:")
+        self.signal_label.grid(row=3, column=0, padx=5, pady=5)
+        self.signal_value = ttk.Label(self.indicator_frame, text="--")
+        self.signal_value.grid(row=3, column=1, padx=5, pady=5)
+
         # Botões de Controle
         self.start_button = ttk.Button(root, text="Iniciar Trading", command=self.start_trading)
-        self.start_button.grid(row=5, column=0, padx=5, pady=5)
+        self.start_button.grid(row=6, column=0, padx=5, pady=5)
         self.stop_button = ttk.Button(root, text="Parar Trading", command=self.stop_trading, state="disabled")
-        self.stop_button.grid(row=5, column=1, padx=5, pady=5)
+        self.stop_button.grid(row=6, column=1, padx=5, pady=5)
 
         # Área de Logs
         self.log_text = tk.Text(root, height=10, width=50)
-        self.log_text.grid(row=6, column=0, columnspan=2, padx=5, pady=5)
+        self.log_text.grid(row=7, column=0, columnspan=2, padx=5, pady=5)
         self.log_text.config(state=tk.DISABLED)
 
     def start_trading(self):
@@ -91,6 +115,12 @@ class TradingApp:
         if running:
             trading_loop()
             self.root.after(60000, self.update_data)
+
+    def update_indicators(self, sma, rsi, macd, signal):
+        self.sma_value.config(text=f"{sma:.2f}")
+        self.rsi_value.config(text=f"{rsi:.2f}")
+        self.macd_value.config(text=f"{macd:.2f}")
+        self.signal_value.config(text=f"{signal:.2f}")
 
 def reconnect_api():
     global api
@@ -155,6 +185,9 @@ def analisar_e_investir(ticker):
 
     stop_loss = preco_atual * (1 - stop_loss_pct / 100)
     take_profit = preco_atual * (1 + take_profit_pct / 100)
+
+    # Atualizar painel de indicadores
+    app.update_indicators(sma_20, rsi, macd, signal)
 
     # Condições de compra
     if preco_atual > sma_20 and rsi < 70 and macd > signal:
