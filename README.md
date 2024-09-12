@@ -65,3 +65,9 @@ Nota: Este código é para fins educacionais e de demonstração. Antes de usar 
 
 Este `README.md` fornece uma visão geral clara do propósito, funcionamento e requisitos do sistema de trading automático, além de instruções detalhadas para instalação, uso e contribuição. Adapte o texto conforme necessário para refletir qualquer detalhe específico do seu projeto ou configuração.
 
+##Principais modificações:
+- Painel de Indicadores: Um painel foi adicionado à interface para exibir os valores de SMA, RSI, MACD e Signal.
+- Função update_indicators: Atualiza os valores no painel com base nos cálculos de indicadores.
+- Exibição gráfica: Agora, ao invés de exibir os valores no terminal, eles aparecem na interface gráfica.
+Esse código permitirá que você visualize os indicadores de análise técnica diretamente na interface gráfica, atualizando-os à medida que os dados são processados.
+
